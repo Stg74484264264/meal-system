@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单统计 - 社区老年助餐预约系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-4 md:p-6 mb-4;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary text-primary font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .status-badge {
+            @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+        }
+        
+        .status-pending {
+            @apply bg-amber-100 text-amber-700;
+        }
+        
+        .status-confirmed {
+            @apply bg-blue-100 text-blue-700;
+        }
+        
+        .status-completed {
+            @apply bg-green-100 text-green-700;
+        }
+        
+        .status-cancelled {
+            @apply bg-red-100 text-red-700;
+        }
+        
+        .mobile-order-card {
+            @apply bg-white rounded-lg shadow-md p-4 mb-3 border border-gray-100;
+        }
+        
+        .mobile-label {
+            @apply text-gray-400 text-xs uppercase tracking-wide;
+        }
+        
+        .mobile-value {
+            @apply text-gray-800 font-medium;
+        }
+        
+        .desktop-table {
+            @apply hidden lg:table w-full;
+        }
+        
+        .mobile-view {
+            @apply lg:hidden;
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .btn-outline {
+                @apply py-3 px-6;
+            }
+            
+            .status-badge {
+                @apply px-3 py-1.5 text-sm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6">
+        <div class="card">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <a href="/admin/index" class="btn-outline w-full sm:w-auto text-center">
+                        <i class="fa fa-arrow-left mr-1.5"></i>返回首页
+                    </a>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-primary">订单统计</h1>
+                </div>
+            </div>
+
+            <div class="mobile-view">
+                <div th:each="order : ${orders}" class="mobile-order-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="mobile-label">订单编号</div>
+                            <div class="mobile-value text-lg font-mono" th:text="${order.id}"></div>
+                        </div>
+                        <span class="status-badge" th:classappend="${order.status == 'pending' ? 'status-pending' : order.status == 'confirmed' ? 'status-confirmed' : order.status == 'completed' ? 'status-completed' : 'status-cancelled'}">
+                            <span th:if="${order.status == 'pending'}">待确认</span>
+                            <span th:if="${order.status == 'confirmed'}">已确认</span>
+                            <span th:if="${order.status == 'completed'}">已完成</span>
+                            <span th:if="${order.status == 'cancelled'}">已取消</span>
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <div class="mobile-label">用户</div>
+                            <div class="mobile-value" th:text="${order.userName}"></div>
+                        </div>
+                        <div>
+                            <div class="mobile-label">菜品</div>
+                            <div class="mobile-value" th:text="${order.foodName}"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div>
+                            <div class="mobile-label">数量</div>
+                            <div class="mobile-value" th:text="${order.quantity}"></div>
+                        </div>
+                        <div>
+                            <div class="mobile-label">总价</div>
+                            <div class="mobile-value text-primary font-semibold" th:text="'¥' + ${order.totalPrice}"></div>
+                        </div>
+                        <div>
+                            <div class="mobile-label">状态</div>
+                            <div class="mobile-value text-sm" th:text="${order.status == 'pending' ? '待确认' : order.status == 'confirmed' ? '已确认' : order.status == 'completed' ? '已完成' : '已取消'}"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="mobile-label">订单时间</div>
+                        <div class="mobile-value text-sm text-gray-600" th:text="${order.orderTime}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto lg:overflow-visible">
+                <table class="desktop-table">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-primary/10 to-primary/5">
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">订单编号</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">用户</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">菜品</th>
+                            <th class="py-3 px-4 text-center font-semibold text-gray-700">数量</th>
+                            <th class="py-3 px-4 text-right font-semibold text-gray-700">总价</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">订单时间</th>
+                            <th class="py-3 px-4 text-center font-semibold text-gray-700">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}" class="border-b border-gray-100 hover:bg-blue-50/50 transition-colors">
+                            <td class="py-3 px-4 text-gray-800 font-mono" th:text="${order.id}"></td>
+                            <td class="py-3 px-4 text-gray-800" th:text="${order.userName}"></td>
+                            <td class="py-3 px-4 text-gray-800" th:text="${order.foodName}"></td>
+                            <td class="py-3 px-4 text-center text-gray-800" th:text="${order.quantity}"></td>
+                            <td class="py-3 px-4 text-right text-primary font-semibold" th:text="'¥' + ${order.totalPrice}"></td>
+                            <td class="py-3 px-4 text-gray-600 text-sm" th:text="${order.orderTime}"></td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="status-badge" th:classappend="${order.status == 'pending' ? 'status-pending' : order.status == 'confirmed' ? 'status-confirmed' : order.status == 'completed' ? 'status-completed' : 'status-cancelled'}">
+                                    <span th:if="${order.status == 'pending'}">待确认</span>
+                                    <span th:if="${order.status == 'confirmed'}">已确认</span>
+                                    <span th:if="${order.status == 'completed'}">已完成</span>
+                                    <span th:if="${order.status == 'cancelled'}">已取消</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 页脚样式 */
+        .footer {
+            background-color: #4A90E2;
+            color: white;
+            padding: 30px 0;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-info {
+            text-align: center;
+        }
+        
+        .footer-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .footer-phone {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer-phone i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .footer-address {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-hours {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-copyright {
+            font-size: 16px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .footer {
+                padding: 20px 0;
+            }
+            
+            .footer-title {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .footer-phone {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+            
+            .footer-phone i {
+                font-size: 22px;
+            }
+            
+            .footer-address {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .footer-hours {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+            
+            .footer-copyright {
+                font-size: 14px;
+                padding-top: 15px;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <div class="footer-title">
+                    <i class="fa fa-cutlery mr-2"></i>
+                    社区老年助餐服务中心
+                </div>
+                
+                <div class="footer-phone">
+                    <i class="fa fa-phone"></i>
+                    服务热线：400-123-4567
+                </div>
+                
+                <div class="footer-address">
+                    <i class="fa fa-map-marker mr-2"></i>
+                    地址：北京市朝阳区幸福社区服务中心
+                </div>
+                
+                <div class="footer-hours">
+                    <i class="fa fa-clock-o mr-2"></i>
+                    服务时间：周一至周日 7:00-19:00
+                </div>
+                
+                <div class="footer-copyright">
+                    © 2026 社区老年助餐预约系统 版权所有
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

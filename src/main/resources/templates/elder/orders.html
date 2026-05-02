@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 社区老年助餐预约系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none;
+            }
+        }
+        
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 18px;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6 mb-6;
+        }
+        
+        .section-title {
+            @apply text-2xl font-bold text-gray-800 mb-4;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-danger {
+            @apply bg-danger text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-red-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary text-primary text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .order-status {
+            @apply px-4 py-2 rounded-lg text-xl font-bold text-center;
+        }
+        
+        .order-status-pending {
+            @apply bg-yellow-100 text-yellow-800;
+        }
+        
+        .order-status-confirmed {
+            @apply bg-green-100 text-green-800;
+        }
+        
+        .order-status-completed {
+            @apply bg-blue-100 text-blue-800;
+        }
+        
+        .order-status-cancelled {
+            @apply bg-red-100 text-red-800;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                @apply text-xl;
+            }
+            
+            .btn-primary, .btn-danger, .btn-outline {
+                @apply text-lg py-3 px-6;
+            }
+        }
+        
+        .confirm-dialog {
+            @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+            display: none;
+        }
+        
+        .confirm-dialog.show {
+            display: flex;
+        }
+        
+        .confirm-dialog-content {
+            @apply bg-white rounded-xl p-8 max-w-md w-full mx-4;
+        }
+        
+        .confirm-dialog-title {
+            @apply text-2xl font-bold text-gray-800 mb-4 text-center;
+        }
+        
+        .confirm-dialog-message {
+            @apply text-xl text-gray-600 mb-6 text-center;
+        }
+        
+        .confirm-dialog-buttons {
+            @apply flex flex-col gap-4;
+        }
+        
+        .confirm-dialog-btn {
+            @apply text-xl font-bold py-4 px-8 rounded-lg transition-all duration-300;
+        }
+        
+        .confirm-dialog-btn-confirm {
+            @apply bg-danger text-white hover:bg-red-600;
+        }
+        
+        .confirm-dialog-btn-cancel {
+            @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+        }
+        
+        .confirm-dialog-btn-receive {
+            @apply bg-success text-white hover:bg-green-600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <div class="card mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-primary mb-2">我的订单</h1>
+                    <p class="text-xl text-gray-600">查看您的预约记录</p>
+                </div>
+                <a href="/elder/index" class="btn-outline mt-4 md:mt-0">
+                    <i class="fa fa-home mr-2"></i>返回首页
+                </a>
+            </div>
+        </div>
+        
+        <div th:if="${success}" class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg mb-6">
+            <i class="fa fa-check-circle mr-2 text-xl"></i>
+            <span class="text-xl" th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6">
+            <i class="fa fa-exclamation-circle mr-2 text-xl"></i>
+            <span class="text-xl" th:text="${error}"></span>
+        </div>
+        
+        <div th:if="${orders != null and !orders.isEmpty()}" class="space-y-6">
+            <div th:each="order : ${orders}" class="card w-full">
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800">订单编号: <span th:text="${order.id}"></span></h3>
+                            <p class="text-lg text-gray-600">预约时间: <span th:text="${order.orderTime}"></span></p>
+                        </div>
+                        <div class="order-status" th:class="${order.status == 'pending' ? 'order-status-pending' : order.status == 'confirmed' ? 'order-status-confirmed' : order.status == 'completed' ? 'order-status-completed' : 'order-status-cancelled'}">
+                            <span th:if="${order.status == 'pending'}">待配餐</span>
+                            <span th:if="${order.status == 'confirmed'}">已配餐</span>
+                            <span th:if="${order.status == 'completed'}">已领取</span>
+                            <span th:if="${order.status == 'cancelled'}">已取消</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex items-center mb-3">
+                            <div th:if="${order.foodImage != null and order.foodImage != ''}" class="w-20 h-20 mr-4">
+                                <img th:src="@{/static/images/{image}(image=${order.foodImage})}" th:alt="${order.foodName}" class="w-full h-full object-cover rounded-lg">
+                            </div>
+                            <div th:else class="w-20 h-20 bg-gray-200 rounded-lg mr-4 flex items-center justify-center">
+                                <i class="fa fa-cutlery text-gray-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-800" th:text="${order.foodName != null ? order.foodName : '未知菜品'}"></h4>
+                                <p class="text-lg text-gray-600">数量: <span th:text="${order.quantity}"></span> 份</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-4 pt-4 border-t border-gray-200">
+                        <div class="text-xl font-bold text-gray-800">
+                            总价: <span class="text-red-500">¥<span th:text="${order.totalPrice}"></span></span>
+                        </div>
+                        
+                        <div th:if="${order.status == 'pending'}">
+                            <button type="button" class="btn-danger cancel-btn w-full md:w-auto" th:attr="data-order-id=${order.id}">
+                                <i class="fa fa-times-circle mr-2"></i>取消订单
+                            </button>
+                        </div>
+                        <div th:if="${order.status == 'confirmed'}">
+                            <button type="button" class="btn-primary receive-btn w-full md:w-auto" th:attr="data-order-id=${order.id}">
+                                <i class="fa fa-check-circle mr-2"></i>确认领取
+                            </button>
+                        </div>
+                        <div th:if="${order.status == 'completed'}" class="text-lg text-gray-500">
+                            已领取
+                        </div>
+                        <div th:if="${order.status == 'cancelled'}" class="text-lg text-gray-500">
+                            已取消
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${orders == null or orders.isEmpty()}" class="card text-center">
+            <div class="py-8">
+                <i class="fa fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600 mb-2">暂无订单</h3>
+                <p class="text-xl text-gray-500 mb-6">您还没有预约任何餐食</p>
+                <a href="/elder/menu" class="btn-primary">
+                    <i class="fa fa-cutlery mr-2"></i>去预约餐食
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="cancelConfirmDialog" class="confirm-dialog">
+        <div class="confirm-dialog-content">
+            <h3 class="confirm-dialog-title">确认取消订单</h3>
+            <p class="confirm-dialog-message">确定要取消这个订单吗？取消后无法恢复。</p>
+            <div class="confirm-dialog-buttons">
+                <button type="button" id="confirmCancelBtn" class="confirm-dialog-btn confirm-dialog-btn-confirm">
+                    确认取消
+                </button>
+                <button type="button" id="cancelCancelBtn" class="confirm-dialog-btn confirm-dialog-btn-cancel">
+                    取消操作
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="receiveConfirmDialog" class="confirm-dialog">
+        <div class="confirm-dialog-content">
+            <h3 class="confirm-dialog-title">确认领取餐品</h3>
+            <p class="confirm-dialog-message">确认您已领取这个订单的餐品吗？</p>
+            <div class="confirm-dialog-buttons">
+                <button type="button" id="confirmReceiveBtn" class="confirm-dialog-btn confirm-dialog-btn-receive">
+                    确认领取
+                </button>
+                <button type="button" id="cancelReceiveBtn" class="confirm-dialog-btn confirm-dialog-btn-cancel">
+                    取消操作
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <form id="cancelForm" action="/elder/cancelOrder" method="post" class="hidden">
+        <input type="hidden" id="cancelOrderId" name="orderId">
+    </form>
+    
+    <form id="receiveForm" action="/elder/confirmReceiveOrder" method="post" class="hidden">
+        <input type="hidden" id="receiveOrderId" name="orderId">
+    </form>
+    
+    <script>
+        (function() {
+            let currentCancelOrderId = null;
+            let currentReceiveOrderId = null;
+            
+            const cancelConfirmDialog = document.getElementById('cancelConfirmDialog');
+            const receiveConfirmDialog = document.getElementById('receiveConfirmDialog');
+            const cancelOrderIdInput = document.getElementById('cancelOrderId');
+            const receiveOrderIdInput = document.getElementById('receiveOrderId');
+            const cancelForm = document.getElementById('cancelForm');
+            const receiveForm = document.getElementById('receiveForm');
+            const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+            const cancelCancelBtn = document.getElementById('cancelCancelBtn');
+            const confirmReceiveBtn = document.getElementById('confirmReceiveBtn');
+            const cancelReceiveBtn = document.getElementById('cancelReceiveBtn');
+            
+            function showCancelDialog(orderId) {
+                currentCancelOrderId = orderId;
+                cancelConfirmDialog.classList.add('show');
+            }
+            
+            function hideCancelDialog() {
+                currentCancelOrderId = null;
+                cancelConfirmDialog.classList.remove('show');
+            }
+            
+            function showReceiveDialog(orderId) {
+                currentReceiveOrderId = orderId;
+                receiveConfirmDialog.classList.add('show');
+            }
+            
+            function hideReceiveDialog() {
+                currentReceiveOrderId = null;
+                receiveConfirmDialog.classList.remove('show');
+            }
+            
+            document.querySelectorAll('.cancel-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    showCancelDialog(this.getAttribute('data-order-id'));
+                });
+            });
+            
+            document.querySelectorAll('.receive-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    showReceiveDialog(this.getAttribute('data-order-id'));
+                });
+            });
+            
+            confirmCancelBtn.addEventListener('click', function() {
+                if (currentCancelOrderId) {
+                    cancelOrderIdInput.value = currentCancelOrderId;
+                    cancelForm.submit();
+                }
+            });
+            
+            cancelCancelBtn.addEventListener('click', hideCancelDialog);
+            
+            confirmReceiveBtn.addEventListener('click', function() {
+                if (currentReceiveOrderId) {
+                    receiveOrderIdInput.value = currentReceiveOrderId;
+                    receiveForm.submit();
+                }
+            });
+            
+            cancelReceiveBtn.addEventListener('click', hideReceiveDialog);
+            
+            cancelConfirmDialog.addEventListener('click', function(event) {
+                if (event.target === cancelConfirmDialog) {
+                    hideCancelDialog();
+                }
+            });
+            
+            receiveConfirmDialog.addEventListener('click', function(event) {
+                if (event.target === receiveConfirmDialog) {
+                    hideReceiveDialog();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

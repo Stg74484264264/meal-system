@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食堂管理中心 - 社区老年助餐预约系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-4 md:p-6 mb-4;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-orange-500 transition-all duration-300;
+        }
+        
+        .btn-success {
+            @apply bg-success text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-green-600 transition-all duration-300;
+        }
+        
+        .btn-danger {
+            @apply bg-danger text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-red-600 transition-all duration-300;
+        }
+        
+        .stat-card {
+            @apply bg-white rounded-xl shadow-md p-4 md:p-5 border border-gray-100 hover:shadow-lg transition-shadow duration-300;
+        }
+        
+        .stat-icon {
+            @apply w-12 h-12 flex items-center justify-center rounded-xl mb-3;
+        }
+        
+        .stat-icon-blue {
+            @apply bg-blue-100 text-blue-600;
+        }
+        
+        .stat-icon-yellow {
+            @apply bg-amber-100 text-amber-600;
+        }
+        
+        .stat-icon-green {
+            @apply bg-green-100 text-green-600;
+        }
+        
+        .stat-icon-red {
+            @apply bg-red-100 text-red-600;
+        }
+        
+        .stat-number {
+            @apply text-2xl md:text-3xl font-bold text-gray-800 mb-1 text-center;
+        }
+        
+        .stat-label {
+            @apply text-gray-500 text-sm md:text-base;
+        }
+        
+        .nav-item {
+            @apply flex items-center p-4 bg-white rounded-lg shadow-md hover:bg-blue-50 hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-100;
+        }
+        
+        .nav-icon {
+            @apply w-10 h-10 flex items-center justify-center rounded-lg bg-primary/10 text-primary mr-3;
+        }
+        
+        .nav-text {
+            @apply font-semibold text-gray-800;
+        }
+        
+        .nav-desc {
+            @apply text-sm text-gray-500;
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+                @apply py-3 px-6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6">
+        <div class="card">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-primary">食堂管理中心</h1>
+                    <p class="text-gray-600 mt-1">
+                        您好，<span class="font-semibold text-primary" th:text="${user.name}"></span>！
+                        <span>今天是</span>
+                        <span class="font-semibold text-gray-800" th:text="${#dates.format(#dates.createNow(), 'yyyy年MM月dd日')}"></span>
+                    </p>
+                </div>
+                <a href="/login/logout" class="btn-danger w-full md:w-auto text-center">
+                    <i class="fa fa-sign-out mr-1.5"></i>退出登录
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-blue">
+                    <i class="fa fa-users text-xl"></i>
+                </div>
+                <div class="stat-number" th:text="${statistics.totalUsers}"></div>
+                <div class="stat-label">总预约人数</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-yellow">
+                    <i class="fa fa-shopping-cart text-xl"></i>
+                </div>
+                <div class="stat-number" th:text="${statistics.totalOrders}"></div>
+                <div class="stat-label">总订单数</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-green">
+                    <i class="fa fa-clock-o text-xl"></i>
+                </div>
+                <div class="stat-number" th:text="${statistics.pendingOrders}"></div>
+                <div class="stat-label">待配餐</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-red">
+                    <i class="fa fa-check-circle text-xl"></i>
+                </div>
+                <div class="stat-number" th:text="${statistics.completedOrders}"></div>
+                <div class="stat-label">已领取</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">功能菜单</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/canteen/orderList" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fa fa-list-alt"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="nav-text">订单管理</div>
+                        <div class="nav-desc">查看和处理预约订单</div>
+                    </div>
+                    <i class="fa fa-angle-right text-gray-400"></i>
+                </a>
+                
+                <a href="/canteen/foodCheck" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fa fa-cutlery"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="nav-text">菜品核对</div>
+                        <div class="nav-desc">核对当日菜品预约数量</div>
+                    </div>
+                    <i class="fa fa-angle-right text-gray-400"></i>
+                </a>
+                
+                <a href="/canteen/foodManage" class="nav-item">
+                    <div class="nav-icon">
+                        <i class="fa fa-database"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="nav-text">菜品管理</div>
+                        <div class="nav-desc">管理菜品的上架和下架</div>
+                    </div>
+                    <i class="fa fa-angle-right text-gray-400"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">快捷操作</h2>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="/canteen/orderList?status=pending" class="btn-primary text-center">
+                    <i class="fa fa-clock-o mr-1.5"></i>处理待配餐订单
+                </a>
+                <a href="/canteen/foodCheck" class="btn-secondary text-center">
+                    <i class="fa fa-cutlery mr-1.5"></i>今日菜品核对
+                </a>
+                <a href="/canteen/foodManage" class="btn-success text-center">
+                    <i class="fa fa-database mr-1.5"></i>菜品管理
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

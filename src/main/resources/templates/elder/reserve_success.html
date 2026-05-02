@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预约成功 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+        }
+        
+        /* 自定义样式 */
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 18px;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6 mb-6;
+        }
+        
+        .success-icon {
+            @apply text-6xl text-success mb-4;
+        }
+        
+        .success-title {
+            @apply text-2xl font-bold text-success mb-4;
+        }
+        
+        .order-info {
+            @apply bg-gray-50 rounded-lg p-6 mb-6;
+        }
+        
+        .info-item {
+            @apply flex justify-between items-center py-3 border-b border-gray-200;
+        }
+        
+        .info-label {
+            @apply text-xl text-gray-600;
+        }
+        
+        .info-value {
+            @apply text-xl font-semibold text-gray-800;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-orange-500 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-success {
+            @apply bg-success text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-green-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .success-icon {
+                @apply text-5xl;
+            }
+            
+            .success-title {
+                @apply text-xl;
+            }
+            
+            .info-label, .info-value {
+                @apply text-lg;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-success {
+                @apply text-lg py-3 px-6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <div class="card max-w-2xl mx-auto">
+            <div class="text-center">
+                <div class="success-icon">
+                    <i class="fa fa-check-circle"></i>
+                </div>
+                <h1 class="success-title" th:text="${success}">预约成功！</h1>
+                <p class="text-xl text-gray-600 mb-6">您的餐食预约已成功提交</p>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div class="order-info" th:if="${order != null}">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">订单信息</h2>
+                
+                <div class="info-item">
+                    <span class="info-label">订单编号</span>
+                    <span class="info-value" th:text="${order.id}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">餐食名称</span>
+                    <span class="info-value" th:text="${order.foodName}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">预约数量</span>
+                    <span class="info-value" th:text="${order.quantity} + ' 份'"></span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">预约日期</span>
+                    <span class="info-value" th:text="${order.orderTime}"></span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-label">订单金额</span>
+                    <span class="info-value text-red-500" th:text="'¥' + ${order.totalPrice}"></span>
+                </div>
+                
+                <div class="info-item border-b-0">
+                    <span class="info-label">订单状态</span>
+                    <span class="info-value text-blue-500">待配餐</span>
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <a href="/elder/orders" class="btn-primary text-center">
+                    <i class="fa fa-list-alt mr-2"></i>查看订单
+                </a>
+                <a href="/elder/menu" class="btn-secondary text-center">
+                    <i class="fa fa-cutlery mr-2"></i>继续预约
+                </a>
+                <a href="/elder/index" class="btn-success text-center">
+                    <i class="fa fa-home mr-2"></i>返回首页
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加页面加载动画
+            const card = document.querySelector('.card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

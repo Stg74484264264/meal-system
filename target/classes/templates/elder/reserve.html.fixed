@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>餐食预约 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none;
+            }
+        }
+        
+        /* 自定义样式 */
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 18px;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6 mb-6;
+        }
+        
+        .form-group {
+            @apply mb-6;
+        }
+        
+        .form-label {
+            @apply block text-xl font-semibold text-gray-700 mb-3;
+        }
+        
+        .form-input {
+            @apply w-full text-xl px-4 py-4 border-2 border-gray-300 rounded-lg input-focus;
+        }
+        
+        .form-select {
+            @apply w-full text-xl px-4 py-4 border-2 border-gray-300 rounded-lg input-focus;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-orange-500 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary text-primary text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .food-image {
+            @apply w-full h-64 object-cover rounded-lg mb-4;
+        }
+        
+        .food-name {
+            @apply text-2xl font-bold text-gray-800 mb-2;
+        }
+        
+        .food-description {
+            @apply text-xl text-gray-600 mb-3;
+        }
+        
+        .food-price {
+            @apply text-2xl font-bold text-red-500 mb-4;
+        }
+        
+        .quantity-btn {
+            @apply w-12 h-12 text-xl font-bold rounded-lg border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .quantity-input {
+            @apply w-16 h-12 text-xl font-bold text-center border-2 border-gray-300 rounded-lg mx-2;
+        }
+        
+        .section-title {
+            @apply text-2xl font-bold text-gray-800 mb-4;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .form-label {
+                @apply text-lg;
+            }
+            
+            .form-input, .form-select {
+                @apply text-lg py-3;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-outline {
+                @apply text-lg py-3 px-6;
+            }
+            
+            .food-name {
+                @apply text-xl;
+            }
+            
+            .food-description {
+                @apply text-base;
+            }
+            
+            .food-price {
+                @apply text-xl;
+            }
+            
+            .section-title {
+                @apply text-xl;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <!-- 头部信息 -->
+        <div class="card mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-primary mb-2">餐食预约</h1>
+                    <p class="text-xl text-gray-600">请选择预约信息</p>
+                </div>
+                <a href="/elder/menu" class="btn-outline mt-4 md:mt-0">
+                    <i class="fa fa-arrow-left mr-2"></i>返回菜单
+                </a>
+            </div>
+        </div>
+        
+        <!-- 错误信息显示 -->
+        <div th:if="${error != null}" class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6">
+            <i class="fa fa-exclamation-circle mr-2 text-xl"></i>
+            <span class="text-xl" th:text="${error}"></span>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 餐食信息 -->
+            <div class="card">
+                <h2 class="section-title mb-4">餐食信息</h2>
+                <img th:src="@{/static/images/{image}(image=${food.image})}" th:alt="${food.name}" class="food-image">
+                <h3 class="food-name" th:text="${food.name}"></h3>
+                <p class="food-description" th:text="${food.description}"></p>
+                <p class="text-xl text-gray-600 mb-2">
+                    <i class="fa fa-cubes mr-2"></i>
+                    剩余: <span class="font-semibold" th:text="${food.stock}"></span> 份
+                </p>
+                <p class="food-price">
+                    ¥<span th:text="${food.price}"></span> / 份
+                </p>
+            </div>
+            
+            <!-- 预约表单 -->
+            <div class="card">
+                <h2 class="section-title mb-6">预约信息</h2>
+                <form th:action="@{/elder/reserve}" method="post">
+                    <input type="hidden" name="foodId" th:value="${food.id}">
+                    
+                    <!-- 预约日期 -->
+                    <div class="form-group">
+                        <label for="orderTime" class="form-label">
+                            <i class="fa fa-calendar mr-2"></i>预约日期
+                        </label>
+                        <input type="date" id="orderTime" name="orderTime" class="form-input" 
+                               th:value="${today}" th:min="${today}" required>
+                    </div>
+                    
+                    <!-- 预约数量 -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa fa-sitemap mr-2"></i>预约数量
+                        </label>
+                        <div class="flex items-center">
+                            <button type="button" class="quantity-btn" onclick="decreaseQuantity()">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" name="quantity" class="quantity-input" 
+                                   value="1" min="1" th:max="${food.stock}" required>
+                            <button type="button" class="quantity-btn" onclick="increaseQuantity()">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 mt-2">最多可预约 <span th:text="${food.stock}"></span> 份</p>
+                    </div>
+                    
+                    <!-- 总价显示 -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fa fa-money mr-2"></i>总价
+                        </label>
+                        <div class="text-2xl font-bold text-red-500">
+                            ¥<span id="totalPrice" th:text="${food.price}"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- 提交按钮 -->
+                    <div class="mt-8">
+                        <button type="submit" class="btn-primary w-full">
+                            <i class="fa fa-check-circle mr-2"></i>确认预约
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自动聚焦到日期输入框
+            const dateInput = document.getElementById('orderTime');
+            if (dateInput) {
+                dateInput.focus();
+            }
+            
+            // 监听数量变化，更新总价
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.addEventListener('input', updateTotalPrice);
+        });
+        
+        // 减少数量
+        function decreaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+                updateTotalPrice();
+            }
+        }
+        
+        // 增加数量
+        function increaseQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            let currentValue = parseInt(quantityInput.value);
+            let maxValue = parseInt(quantityInput.max);
+            if (currentValue < maxValue) {
+                quantityInput.value = currentValue + 1;
+                updateTotalPrice();
+            }
+        }
+        
+        // 更新总价
+        function updateTotalPrice() {
+            const quantityInput = document.getElementById('quantity');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const price = parseFloat([[${food.price}]]);
+            const quantity = parseInt(quantityInput.value);
+            const totalPrice = price * quantity;
+            totalPriceElement.textContent = totalPrice.toFixed(2);
+        }
+    </script>
+</body>
+</html>

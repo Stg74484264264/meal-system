@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 社区老年助餐预约系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+            .input-focus {
+                @apply focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none;
+            }
+        }
+        
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-4 md:p-6 mb-4;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary text-primary font-semibold py-2.5 px-5 rounded-lg shadow-md hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .role-badge {
+            @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+        }
+        
+        .role-admin {
+            @apply bg-blue-100 text-blue-700;
+        }
+        
+        .role-canteen {
+            @apply bg-green-100 text-green-700;
+        }
+        
+        .role-elder {
+            @apply bg-amber-100 text-amber-700;
+        }
+        
+        .action-btn {
+            @apply flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 text-base;
+        }
+        
+        .edit-btn {
+            @apply text-blue-500 hover:text-blue-700 hover:bg-blue-100;
+        }
+        
+        .reset-btn {
+            @apply text-amber-500 hover:text-amber-700 hover:bg-amber-100;
+        }
+        
+        .delete-btn {
+            @apply text-red-500 hover:text-red-700 hover:bg-red-100;
+        }
+        
+        .mobile-user-card {
+            @apply bg-white rounded-lg shadow-md p-4 mb-3 border border-gray-100;
+        }
+        
+        .mobile-label {
+            @apply text-gray-400 text-xs uppercase tracking-wide;
+        }
+        
+        .mobile-value {
+            @apply text-gray-800 font-medium;
+        }
+        
+        .desktop-table {
+            @apply hidden lg:table w-full;
+        }
+        
+        .mobile-view {
+            @apply lg:hidden;
+        }
+        
+        .header-row {
+            @apply bg-gradient-to-r from-primary/10 to-primary/5;
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .btn-primary, .btn-outline {
+                @apply py-3 px-6;
+            }
+            
+            .role-badge {
+                @apply px-3 py-1.5 text-sm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-6">
+        <div class="card">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <a href="/admin/index" class="btn-outline w-full sm:w-auto text-center">
+                        <i class="fa fa-arrow-left mr-1.5"></i>返回首页
+                    </a>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-primary">用户管理</h1>
+                </div>
+                <a href="/admin/addUser" class="btn-primary w-full sm:w-auto text-center">
+                    <i class="fa fa-plus mr-1.5"></i>新增用户
+                </a>
+            </div>
+
+            <div th:if="${success}" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                <p th:text="${success}"></p>
+            </div>
+            <div th:if="${error}" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <div class="mobile-view">
+                <div th:each="user : ${users}" class="mobile-user-card">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="mobile-label">用户名</div>
+                            <div class="mobile-value text-lg" th:text="${user.username}"></div>
+                        </div>
+                        <span class="role-badge" th:classappend="${user.role == 'admin' ? 'role-admin' : user.role == 'canteen' ? 'role-canteen' : 'role-elder'}">
+                            <span th:if="${user.role == 'admin'}">管理员</span>
+                            <span th:if="${user.role == 'canteen'}">食堂</span>
+                            <span th:if="${user.role == 'elder'}">老人</span>
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                            <div class="mobile-label">姓名</div>
+                            <div class="mobile-value" th:text="${user.name}"></div>
+                        </div>
+                        <div>
+                            <div class="mobile-label">电话</div>
+                            <div class="mobile-value" th:text="${user.phone}"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="mobile-label">创建时间</div>
+                        <div class="mobile-value text-sm text-gray-600" th:text="${user.createTime}"></div>
+                    </div>
+                    
+                    <div class="flex justify-center gap-3 pt-3 border-t border-gray-100">
+                        <a th:href="@{/admin/editUser(userId=${user.id})}" class="action-btn edit-btn" title="编辑">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <form th:action="@{/admin/resetPassword}" method="post" class="inline">
+                            <input type="hidden" name="userId" th:value="${user.id}" />
+                            <button type="submit" class="action-btn reset-btn" onclick="return confirm('确定要重置密码吗？')" title="重置密码">
+                                <i class="fa fa-key"></i>
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/deleteUser}" method="post" class="inline">
+                            <input type="hidden" name="userId" th:value="${user.id}" />
+                            <button type="submit" class="action-btn delete-btn" onclick="return confirm('确定要删除该用户吗？')" title="删除">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto lg:overflow-visible">
+                <table class="desktop-table">
+                    <thead>
+                        <tr class="header-row">
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">用户名</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">姓名</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">电话</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">角色</th>
+                            <th class="py-3 px-4 text-left font-semibold text-gray-700">创建时间</th>
+                            <th class="py-3 px-4 text-center font-semibold text-gray-700">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}" class="border-b border-gray-100 hover:bg-blue-50/50 transition-colors">
+                            <td class="py-3 px-4 text-gray-800" th:text="${user.username}"></td>
+                            <td class="py-3 px-4 text-gray-800" th:text="${user.name}"></td>
+                            <td class="py-3 px-4 text-gray-800" th:text="${user.phone}"></td>
+                            <td class="py-3 px-4">
+                                <span class="role-badge" th:classappend="${user.role == 'admin' ? 'role-admin' : user.role == 'canteen' ? 'role-canteen' : 'role-elder'}">
+                                    <span th:if="${user.role == 'admin'}">系统管理员</span>
+                                    <span th:if="${user.role == 'canteen'}">食堂管理员</span>
+                                    <span th:if="${user.role == 'elder'}">老人用户</span>
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-gray-600 text-sm" th:text="${user.createTime}"></td>
+                            <td class="py-3 px-4">
+                                <div class="flex justify-center gap-2">
+                                    <a th:href="@{/admin/editUser(userId=${user.id})}" class="action-btn edit-btn" title="编辑">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                    <form th:action="@{/admin/resetPassword}" method="post" class="inline">
+                                        <input type="hidden" name="userId" th:value="${user.id}" />
+                                        <button type="submit" class="action-btn reset-btn" onclick="return confirm('确定要重置密码吗？')" title="重置密码">
+                                            <i class="fa fa-key"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/admin/deleteUser}" method="post" class="inline">
+                                        <input type="hidden" name="userId" th:value="${user.id}" />
+                                        <button type="submit" class="action-btn delete-btn" onclick="return confirm('确定要删除该用户吗？')" title="删除">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统管理员首页 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-blue-600 mb-4">系统管理中心</h1>
+                <p class="text-xl text-gray-600 mb-6">欢迎回来，<span class="font-semibold text-blue-700">系统管理员</span></p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                    <a href="/admin/userManage" class="bg-blue-50 p-6 rounded-lg text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-blue-500 text-4xl mb-2">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">用户管理</h3>
+                        <p class="text-gray-600 text-sm">管理所有用户账号</p>
+                    </a>
+                    
+                    <a href="/admin/foodManage" class="bg-green-50 p-6 rounded-lg text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-green-500 text-4xl mb-2">
+                            <i class="fa fa-cutlery"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">餐食管理</h3>
+                        <p class="text-gray-600 text-sm">管理餐食信息</p>
+                    </a>
+                    
+                    <a href="/admin/orderStatistics" class="bg-yellow-50 p-6 rounded-lg text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-yellow-500 text-4xl mb-2">
+                            <i class="fa fa-shopping-cart"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">订单管理</h3>
+                        <p class="text-gray-600 text-sm">查看所有订单</p>
+                    </a>
+                    
+                    <a href="/admin/noticeManage" class="bg-red-50 p-6 rounded-lg text-center hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-red-500 text-4xl mb-2">
+                            <i class="fa fa-bullhorn"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-1">公告管理</h3>
+                        <p class="text-gray-600 text-sm">发布系统公告</p>
+                    </a>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <a href="/login/logout" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg text-lg transition duration-300">
+                        <i class="fa fa-sign-out mr-2"></i>退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

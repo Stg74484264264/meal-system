@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜品表单 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center" th:text="${action == 'add' ? '新增菜品' : '编辑菜品'}"></h1>
+
+            <!-- 消息提示 -->
+            <div th:if="${error}" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- 菜品表单 -->
+            <form th:action="@{/admin/saveFood}" th:object="${food}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="action" th:value="${action}" />
+                <input type="hidden" th:if="${action == 'edit'}" th:field="*{id}" />
+                
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">菜品名称</label>
+                    <input type="text" id="name" th:field="*{name}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="block text-gray-700 text-sm font-bold mb-2">菜品描述</label>
+                    <textarea id="description" th:field="*{description}" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="price" class="block text-gray-700 text-sm font-bold mb-2">价格</label>
+                    <input type="number" id="price" th:field="*{price}" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                </div>
+                
+                <div class="mb-4">
+                    <label for="category" class="block text-gray-700 text-sm font-bold mb-2">分类</label>
+                    <select id="category" th:field="*{category}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="主食">主食</option>
+                        <option value="荤菜">荤菜</option>
+                        <option value="素菜">素菜</option>
+                        <option value="汤品">汤品</option>
+                        <option value="小吃">小吃</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="mealType" class="block text-gray-700 text-sm font-bold mb-2">餐型</label>
+                    <select id="mealType" th:field="*{mealType}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">请选择餐型</option>
+                        <option value="breakfast">早餐</option>
+                        <option value="lunch">午餐</option>
+                        <option value="dinner">晚餐</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="stock" class="block text-gray-700 text-sm font-bold mb-2">库存</label>
+                    <input type="number" id="stock" th:field="*{stock}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                </div>
+                
+                <div class="mb-6">
+                    <label for="image" class="block text-gray-700 text-sm font-bold mb-2">菜品图片（可选）</label>
+                    <input type="file" id="image" name="image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <div th:if="${action == 'edit' && food.image != null}" class="mt-2">
+                        <img th:src="@{/images/food/{image}(image=${food.image})}" th:alt="${food.name}" class="w-32 h-32 object-cover rounded-md" />
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
+                        <i class="fa fa-save mr-2"></i>保存
+                    </button>
+                    <a href="/admin/foodManage" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-300">
+                        <i class="fa fa-arrow-left mr-2"></i>返回
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

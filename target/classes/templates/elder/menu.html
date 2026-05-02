@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日菜单 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
+            }
+        }
+        
+        /* 自定义样式 */
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 18px;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6 mb-6;
+        }
+        
+        .food-card {
+            @apply bg-white rounded-xl shadow-lg overflow-hidden card-hover;
+        }
+        
+        .food-image {
+            @apply w-full h-48 object-cover;
+        }
+        
+        .food-info {
+            @apply p-4;
+        }
+        
+        .food-name {
+            @apply text-xl font-bold text-gray-800 mb-2;
+        }
+        
+        .food-description {
+            @apply text-gray-600 mb-3 text-lg;
+        }
+        
+        .food-price {
+            @apply text-2xl font-bold text-red-500 mb-4;
+        }
+        
+        .food-stock {
+            @apply text-sm text-gray-500 mb-4;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white text-xl font-bold py-3 px-6 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-white text-xl font-bold py-3 px-6 rounded-lg shadow-md hover:bg-orange-500 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-outline {
+            @apply border-2 border-primary text-primary text-xl font-bold py-3 px-6 rounded-lg shadow-md hover:bg-primary hover:text-white transition-all duration-300;
+        }
+        
+        .section-title {
+            @apply text-2xl font-bold text-gray-800 mb-4;
+        }
+        
+        .filter-btn {
+            @apply px-6 py-2 text-lg font-semibold rounded-lg transition-all duration-300;
+        }
+        
+        .filter-btn.active {
+            @apply bg-primary text-white;
+        }
+        
+        .filter-btn:not(.active) {
+            @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .food-name {
+                @apply text-lg;
+            }
+            
+            .food-description {
+                @apply text-base;
+            }
+            
+            .food-price {
+                @apply text-xl;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-outline {
+                @apply text-lg py-2 px-4;
+            }
+            
+            .section-title {
+                @apply text-xl;
+            }
+            
+            .filter-btn {
+                @apply px-4 py-2 text-base;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <!-- 头部信息 -->
+        <div class="card mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-primary mb-2">今日菜单</h1>
+                    <p class="text-xl text-gray-600" th:text="${today}"></p>
+                </div>
+                <a href="/elder/index" class="btn-outline mt-4 md:mt-0">
+                    <i class="fa fa-arrow-left mr-2"></i>返回首页
+                </a>
+            </div>
+        </div>
+        
+        <!-- 错误信息显示 -->
+        <div th:if="${error != null}" class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6">
+            <i class="fa fa-exclamation-circle mr-2 text-xl"></i>
+            <span class="text-xl" th:text="${error}"></span>
+        </div>
+        
+        <!-- 餐型筛选 -->
+        <div class="card mb-8">
+            <h2 class="section-title mb-4">选择餐型</h2>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <a href="/elder/menu" class="filter-btn" th:classappend="${mealType == '' ? 'active' : ''}">
+                    <i class="fa fa-th-large mr-2"></i>全部餐食
+                </a>
+                <a href="/elder/menu?mealType=breakfast" class="filter-btn" th:classappend="${mealType == 'breakfast' ? 'active' : ''}">
+                    <i class="fa fa-coffee mr-2"></i>早餐
+                </a>
+                <a href="/elder/menu?mealType=lunch" class="filter-btn" th:classappend="${mealType == 'lunch' ? 'active' : ''}">
+                    <i class="fa fa-cutlery mr-2"></i>午餐
+                </a>
+                <a href="/elder/menu?mealType=dinner" class="filter-btn" th:classappend="${mealType == 'dinner' ? 'active' : ''}">
+                    <i class="fa fa-moon-o mr-2"></i>晚餐
+                </a>
+            </div>
+        </div>
+        
+        <!-- 餐食列表 -->
+        <div class="card">
+            <h2 class="section-title mb-6">
+                <i class="fa fa-list-ul mr-2"></i>
+                <span th:text="${#strings.isEmpty(mealType) ? '全部餐食' : mealType == 'breakfast' ? '早餐' : mealType == 'lunch' ? '午餐' : '晚餐'}"></span>
+            </h2>
+            
+            <div th:if="${foods.isEmpty()}" class="text-center py-12">
+                <i class="fa fa-utensils text-gray-400 text-5xl mb-4"></i>
+                <p class="text-2xl text-gray-500">暂无餐食</p>
+            </div>
+            
+            <div th:unless="${foods.isEmpty()}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div th:each="food : ${foods}" class="food-card">
+                    <img th:src="@{/static/images/{image}(image=${food.image})}" th:alt="${food.name}" class="food-image">
+                    <div class="food-info">
+                        <h3 class="food-name" th:text="${food.name}"></h3>
+                        <p class="food-description" th:text="${food.description}"></p>
+                        <p class="food-stock">
+                            <i class="fa fa-cubes mr-2"></i>
+                            剩余: <span class="font-semibold" th:text="${food.stock}"></span> 份
+                        </p>
+                        <p class="food-price">
+                            ¥<span th:text="${food.price}"></span>
+                        </p>
+                        <a th:href="@{/elder/reserve(foodId=${food.id})}" class="btn-primary w-full text-center inline-block">
+                            <i class="fa fa-shopping-cart mr-2"></i>立即预约
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加页面加载动画
+            const cards = document.querySelectorAll('.food-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // 为筛选按钮添加点击效果
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // 移除所有按钮的active类
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // 为当前按钮添加active类
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

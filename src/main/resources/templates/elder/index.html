@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老人用户首页 - 社区老年助餐预约系统</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4A90E2',
+                        secondary: '#FF8C42',
+                        success: '#28A745',
+                        danger: '#DC3545',
+                        warning: '#FFC107',
+                        info: '#17A2B8',
+                        light: '#F8F9FA',
+                        dark: '#343A40',
+                        background: '#F5F7FA'
+                    },
+                    fontFamily: {
+                        sans: ['Arial', 'PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            }
+            .btn-hover {
+                @apply transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl;
+            }
+        }
+        
+        /* 自定义样式 */
+        body {
+            background-color: #F5F7FA;
+            font-family: Arial, PingFang SC, Microsoft YaHei, sans-serif;
+            font-size: 18px;
+        }
+        
+        .nav-item {
+            @apply flex items-center p-4 mb-2 bg-white rounded-lg shadow-md hover:bg-blue-50 transition-all duration-300 cursor-pointer;
+        }
+        
+        .nav-icon {
+            @apply text-3xl text-blue-500 mr-4;
+        }
+        
+        .nav-text {
+            @apply text-xl font-semibold;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-lg p-6 mb-6;
+        }
+        
+        .btn-primary {
+            @apply bg-primary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-orange-500 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .btn-success {
+            @apply bg-success text-white text-xl font-bold py-4 px-8 rounded-lg shadow-md hover:bg-green-600 transition-all duration-300 transform hover:scale-105;
+        }
+        
+        .section-title {
+            @apply text-2xl font-bold text-gray-800 mb-4;
+        }
+        
+        .welcome-text {
+            @apply text-2xl text-gray-600 mb-6;
+        }
+        
+        .highlight-text {
+            @apply text-2xl font-semibold text-blue-600;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+            }
+            
+            .nav-text {
+                @apply text-lg;
+            }
+            
+            .nav-icon {
+                @apply text-2xl;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-success {
+                @apply text-lg py-3 px-6;
+            }
+            
+            .section-title {
+                @apply text-xl;
+            }
+            
+            .welcome-text {
+                @apply text-lg;
+            }
+            
+            .highlight-text {
+                @apply text-xl;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <!-- 头部欢迎信息 -->
+        <div class="card">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-primary mb-4">欢迎使用社区助餐服务</h1>
+                <p class="welcome-text">
+                    您好，<span class="highlight-text" th:text="${user.name}"></span>！今天是 
+                    <span class="text-primary font-semibold" th:text="${#dates.format(#dates.createNow(), 'yyyy年MM月dd日')}"></span>
+                </p>
+                <p class="text-xl text-gray-600">祝您用餐愉快！</p>
+            </div>
+        </div>
+        
+        <!-- 功能导航 -->
+        <div class="card">
+            <h2 class="section-title">服务菜单</h2>
+            <div class="space-y-4">
+                <!-- 查看今日菜单 -->
+                <a href="/elder/menu" class="nav-item">
+                    <i class="fa fa-cutlery nav-icon"></i>
+                    <span class="nav-text">查看今日菜单</span>
+                    <i class="fa fa-angle-right text-gray-400 ml-auto text-2xl"></i>
+                </a>
+                
+                <!-- 我的订单 -->
+                <a href="/elder/orders" class="nav-item">
+                    <i class="fa fa-shopping-cart nav-icon"></i>
+                    <span class="nav-text">我的订单</span>
+                    <i class="fa fa-angle-right text-gray-400 ml-auto text-2xl"></i>
+                </a>
+                
+                <!-- 个人信息 -->
+                <a href="/elder/personal" class="nav-item">
+                    <i class="fa fa-user nav-icon"></i>
+                    <span class="nav-text">个人信息</span>
+                    <i class="fa fa-angle-right text-gray-400 ml-auto text-2xl"></i>
+                </a>
+                
+                <!-- 退出登录 -->
+                <a href="/login/logout" class="nav-item bg-red-50 hover:bg-red-100">
+                    <i class="fa fa-sign-out nav-icon text-red-500"></i>
+                    <span class="nav-text text-red-500">退出登录</span>
+                    <i class="fa fa-angle-right text-red-400 ml-auto text-2xl"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 快捷操作 -->
+        <div class="card">
+            <h2 class="section-title">快捷预约</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="/elder/menu?mealType=breakfast" class="btn-primary text-center">
+                    <i class="fa fa-coffee mr-2"></i>早餐预约
+                </a>
+                <a href="/elder/menu?mealType=lunch" class="btn-primary text-center">
+                    <i class="fa fa-cutlery mr-2"></i>午餐预约
+                </a>
+                <a href="/elder/menu?mealType=dinner" class="btn-primary text-center">
+                    <i class="fa fa-moon-o mr-2"></i>晚餐预约
+                </a>
+            </div>
+        </div>
+        
+        <!-- 温馨提示 -->
+        <div class="card bg-blue-50">
+            <h2 class="section-title text-blue-700">
+                <i class="fa fa-info-circle mr-2"></i>温馨提示
+            </h2>
+            <div class="text-lg text-gray-700 space-y-2">
+                <p>• 请提前一天预约餐食，便于食堂准备</p>
+                <p>• 如需取消订单，请在就餐前2小时操作</p>
+                <p>• 请携带身份证或老年卡到食堂就餐</p>
+                <p>• 如有特殊饮食需求，请联系工作人员</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为导航项添加点击效果
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // 如果是链接，不做处理
+                    if (this.tagName === 'A') {
+                        return;
+                    }
+                    
+                    // 添加点击效果
+                    this.classList.add('bg-blue-100');
+                    setTimeout(() => {
+                        this.classList.remove('bg-blue-100');
+                    }, 200);
+                });
+            });
+            
+            // 添加页面加载动画
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
